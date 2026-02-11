@@ -31,6 +31,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md stock_history.json
+          git add -A
           git commit -m "🤖 자동 업데이트: 주식 데이터 갱신" || echo "No changes to commit"
           git push
