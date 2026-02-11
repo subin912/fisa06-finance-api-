@@ -8,92 +8,124 @@ load_dotenv()  # .env 파일 로드
 
 # Alpha Vantage API 키 (무료)
 API_KEY = os.getenv("STOCK_API_KEY")
-SYMBOL = "GOOGL"  # 원하는 주식 심볼로 변경 (예: AAPL, GOOGL, MSFT, TSLA)
-URL = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={SYMBOL}&apikey={API_KEY}"
 
-# README 파일 경로
+
+# 감시할 종목
+SYMBOLS = ["AAPL", "TSLA", "NVDA"]
+
+# 알림 설정
+ALERTS = {
+    "AAPL": {"target_price_high": 200.0, "target_price_low": 150.0, "change_threshold": 5.0},
+    "TSLA": {"target_price_high": 300.0, "target_price_low": 150.0, "change_threshold": 7.0},
+    "NVDA": {"target_price_high": 150.0, "target_price_low": 100.0, "change_threshold": 6.0}
+}
+
 README_PATH = "README.md"
+ALERTS_LOG_PATH = "alerts_log.json"
 
-def get_stock_data():
-    """Alpha Vantage API를 호출하여 주식 데이터를 가져옴"""
+def to_float(x):
     try:
-        response = requests.get(URL)
-        if response.status_code == 200:
-            data = response.json()
-            
-            if "Global Quote" in data and data["Global Quote"]:
-                quote = data["Global Quote"]
-                symbol = quote.get("01. symbol", "N/A")
-                price = quote.get("05. price", "N/A")
-                change = quote.get("09. change", "N/A")
-                change_percent = quote.get("10. change percent", "N/A")
-                volume = quote.get("06. volume", "N/A")
-                
-                return {
-                    "symbol": symbol,
-                    "price": f"${float(price):.2f}" if price != "N/A" else "N/A",
-                    "change": f"{float(change):.2f}" if change != "N/A" else "N/A",
-                    "change_percent": change_percent,
-                    "volume": f"{int(volume):,}" if volume != "N/A" else "N/A"
-                }
-            else:
-                return None
-        else:
-            return None
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+        return float(str(x).replace("$", "").replace("%", "").replace(",", ""))
+    except:
+        return 0.0
 
-def update_readme():
-    """README.md 파일을 업데이트"""
-    stock_data = get_stock_data()
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    if stock_data:
-        change_emoji = "📈" if stock_data["change"].startswith("-") == False and stock_data["change"] != "N/A" else "📉"
-        
-        readme_content = f"""
-# 📊 Stock Data Tracker
+def fetch_stock(symbol):
+    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={API_KEY}"
+    res = requests.get(url, timeout=10)
+    data = res.json().get("Global Quote", {})
 
-이 리포지토리는 Alpha Vantage API를 사용하여 주식 정보를 자동으로 업데이트합니다.
+    return {
+        "symbol": symbol,
+        "price": to_float(data.get("05. price")),
+        "change": to_float(data.get("09. change")),
+        "change_percent": to_float(data.get("10. change percent")),
+        "volume": data.get("06. volume", "N/A")
+    }
 
-## 현재 {stock_data['symbol']} 주식 정보
+def check_alerts(stock_data):
+    alerts_triggered = []
 
-| 항목 | 값 |
-|------|-----|
-| 💰 현재가 | **{stock_data['price']}** |
-| {change_emoji} 변동 | {stock_data['change']} ({stock_data['change_percent']}) |
-| 📊 거래량 | {stock_data['volume']} |
+    for stock in stock_data:
+        symbol = stock["symbol"]
+        price = stock["price"]
+        change_pct = abs(stock["change_percent"])
 
-⏳ 업데이트 시간: `{now}` (UTC)
+        if symbol not in ALERTS:
+            continue
 
----
+        cfg = ALERTS[symbol]
 
-### 설정 방법
+        if price >= cfg["target_price_high"]:
+            alerts_triggered.append({
+                "symbol": symbol,
+                "type": "TARGET_HIGH",
+                "message": f"🎯 {symbol} 목표가 도달! 현재가: ${price:.2f}",
+                "price": price,
+                "timestamp": datetime.utcnow().isoformat()
+            })
 
-1. [Alpha Vantage](https://www.alphavantage.co/support/#api-key)에서 무료 API 키 발급
-2. GitHub Repository Settings > Secrets에 `STOCK_API_KEY` 추가
-3. `.github/workflows/update_stock.yml` 파일로 자동 업데이트 설정
+        if price <= cfg["target_price_low"]:
+            alerts_triggered.append({
+                "symbol": symbol,
+                "type": "TARGET_LOW",
+                "message": f"⚠️ {symbol} 손절가 도달! 현재가: ${price:.2f}",
+                "price": price,
+                "timestamp": datetime.utcnow().isoformat()
+            })
 
-> 자동 업데이트 봇에 의해 관리됩니다.
-"""
+        if change_pct >= cfg["change_threshold"]:
+            direction = "급등" if stock["change"] > 0 else "급락"
+            alerts_triggered.append({
+                "symbol": symbol,
+                "type": "VOLATILITY",
+                "message": f"🚨 {symbol} {direction}! 변동률: {change_pct:.2f}%",
+                "price": price,
+                "change_percent": change_pct,
+                "timestamp": datetime.utcnow().isoformat()
+            })
+
+    return alerts_triggered
+
+def log_alerts(alerts):
+    if not alerts:
+        return
+
+    log = []
+    if os.path.exists(ALERTS_LOG_PATH):
+        with open(ALERTS_LOG_PATH, "r", encoding="utf-8") as f:
+            log = json.load(f)
+
+    log.extend(alerts)
+    log = log[-100:]
+
+    with open(ALERTS_LOG_PATH, "w", encoding="utf-8") as f:
+        json.dump(log, f, indent=2, ensure_ascii=False)
+
+def update_readme(stock_data, alerts):
+    now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+    content = f"# 📊 Stock Alert Bot\n\n⏱ Updated: `{now} UTC`\n\n## 📈 현재 주식 정보\n\n"
+    content += "| 종목 | 현재가 | 변동 | 변동률 |\n|------|--------|------|--------|\n"
+
+    for s in stock_data:
+        content += f"| {s['symbol']} | ${s['price']:.2f} | {s['change']:.2f} | {s['change_percent']:.2f}% |\n"
+
+    if alerts:
+        content += "\n## 🔔 알림 발생\n\n"
+        for a in alerts:
+            content += f"- {a['message']} (`{a['timestamp']}`)\n"
     else:
-        readme_content = f"""
-# 📊 Stock Data Tracker
+        content += "\n## 🔔 알림 발생\n\n- 현재 조건에 해당하는 알림이 없습니다.\n"
 
-⚠️ 주식 데이터를 가져오는 데 실패했습니다.
+    with open(README_PATH, "w", encoding="utf-8") as f:
+        f.write(content)
 
-⏳ 마지막 시도: `{now}` (UTC)
-
----
-
-> 자동 업데이트 봇에 의해 관리됩니다.
-"""
-    
-    with open(README_PATH, "w", encoding="utf-8") as file:
-        file.write(readme_content)
-    
-    print("README.md updated successfully!")
+def main():
+    stock_data = [fetch_stock(sym) for sym in SYMBOLS]
+    alerts = check_alerts(stock_data)
+    log_alerts(alerts)
+    update_readme(stock_data, alerts)
+    print("Stock data updated and alerts checked.")
 
 if __name__ == "__main__":
-    update_readme()
+    main()
