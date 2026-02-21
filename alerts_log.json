@@ -355,5 +355,26 @@
     "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
     "price": 0.0,
     "timestamp": "2026-02-20T21:33:19.685842"
+  },
+  {
+    "symbol": "AAPL",
+    "type": "TARGET_LOW",
+    "message": "⚠️ AAPL 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-02-21T01:49:52.132300"
+  },
+  {
+    "symbol": "TSLA",
+    "type": "TARGET_LOW",
+    "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-02-21T01:49:52.132314"
+  },
+  {
+    "symbol": "NVDA",
+    "type": "TARGET_LOW",
+    "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-02-21T01:49:52.132317"
   }
 ]
