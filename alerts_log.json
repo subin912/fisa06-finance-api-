@@ -1,33 +1,5 @@
 [
   {
-    "symbol": "AAPL",
-    "type": "TARGET_HIGH",
-    "message": "🎯 AAPL 목표가 도달! 현재가: $307.34",
-    "price": 307.34,
-    "timestamp": "2026-06-07T03:38:13.561655"
-  },
-  {
-    "symbol": "TSLA",
-    "type": "TARGET_LOW",
-    "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
-    "price": 0.0,
-    "timestamp": "2026-06-07T03:38:13.561669"
-  },
-  {
-    "symbol": "NVDA",
-    "type": "TARGET_LOW",
-    "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
-    "price": 0.0,
-    "timestamp": "2026-06-07T03:38:13.561672"
-  },
-  {
-    "symbol": "AAPL",
-    "type": "TARGET_HIGH",
-    "message": "🎯 AAPL 목표가 도달! 현재가: $307.34",
-    "price": 307.34,
-    "timestamp": "2026-06-08T03:43:27.448565"
-  },
-  {
     "symbol": "TSLA",
     "type": "TARGET_LOW",
     "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
@@ -699,5 +671,34 @@
     "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
     "price": 0.0,
     "timestamp": "2026-06-25T22:25:35.184419"
+  },
+  {
+    "symbol": "AAPL",
+    "type": "TARGET_HIGH",
+    "message": "🎯 AAPL 목표가 도달! 현재가: $275.15",
+    "price": 275.15,
+    "timestamp": "2026-06-26T03:27:28.942945"
+  },
+  {
+    "symbol": "AAPL",
+    "type": "VOLATILITY",
+    "message": "🚨 AAPL 급락! 변동률: 6.12%",
+    "price": 275.15,
+    "change_percent": 6.1178,
+    "timestamp": "2026-06-26T03:27:28.942955"
+  },
+  {
+    "symbol": "TSLA",
+    "type": "TARGET_LOW",
+    "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-06-26T03:27:28.942959"
+  },
+  {
+    "symbol": "NVDA",
+    "type": "TARGET_LOW",
+    "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-06-26T03:27:28.942962"
   }
 ]
