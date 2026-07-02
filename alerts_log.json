@@ -4,27 +4,6 @@
     "type": "TARGET_LOW",
     "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
     "price": 0.0,
-    "timestamp": "2026-06-12T22:41:35.589281"
-  },
-  {
-    "symbol": "NVDA",
-    "type": "TARGET_LOW",
-    "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
-    "price": 0.0,
-    "timestamp": "2026-06-12T22:41:35.589285"
-  },
-  {
-    "symbol": "AAPL",
-    "type": "TARGET_HIGH",
-    "message": "🎯 AAPL 목표가 도달! 현재가: $291.13",
-    "price": 291.13,
-    "timestamp": "2026-06-13T03:29:34.578236"
-  },
-  {
-    "symbol": "TSLA",
-    "type": "TARGET_LOW",
-    "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
-    "price": 0.0,
     "timestamp": "2026-06-13T03:29:34.578251"
   },
   {
@@ -700,5 +679,26 @@
     "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
     "price": 0.0,
     "timestamp": "2026-07-01T22:22:46.599255"
+  },
+  {
+    "symbol": "AAPL",
+    "type": "TARGET_HIGH",
+    "message": "🎯 AAPL 목표가 도달! 현재가: $294.38",
+    "price": 294.38,
+    "timestamp": "2026-07-02T02:58:33.037140"
+  },
+  {
+    "symbol": "TSLA",
+    "type": "TARGET_LOW",
+    "message": "⚠️ TSLA 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-07-02T02:58:33.037184"
+  },
+  {
+    "symbol": "NVDA",
+    "type": "TARGET_LOW",
+    "message": "⚠️ NVDA 손절가 도달! 현재가: $0.00",
+    "price": 0.0,
+    "timestamp": "2026-07-02T02:58:33.037189"
   }
 ]
